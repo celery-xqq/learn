@@ -1,2 +1,1 @@
-# learn
-学习使用
+learn to use git
