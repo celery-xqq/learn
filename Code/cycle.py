@@ -52,6 +52,54 @@ def has_cycle(head: ListNode) -> bool:
     return False  # 快指针走到末尾，无环
 
 
+# 关键步骤与数学原理
+# 快慢指针相遇：
+
+# 使用快慢指针（快指针每次走2步，慢指针每次走1步）确定链表有环，并找到它们的相遇点。
+
+# 设链表头到环入口的距离为 a，环入口到相遇点的距离为 b，相遇点再到环入口的距离为 c，则环的总长度为 b + c。
+
+# 推导路程关系：
+
+# 慢指针走过的路程：a + b。
+
+# 快指针走过的路程：a + n(b + c) + b（n 为快指针在环内多绕的圈数，n ≥ 1）。
+
+# 由于快指针速度是慢指针的2倍，因此路程满足：
+# 2(a + b) = a + n(b + c) + b
+# 化简得：
+# a = (n-1)(b + c) + c
+
+# 结论：
+
+# 从链表头到环入口的距离 a 等于从相遇点走到环入口的距离 c 加上 (n-1) 圈环的长度。
+
+# 若此时将一个指针重置到链表头，另一个留在相遇点，同步移动（每次各走1步），最终它们会在环入口相遇。
+
+def detectCycle(head):
+    # 步骤1：确认链表有环，并找到快慢指针的相遇点
+    slow = fast = head
+    has_cycle = False
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+        if slow == fast:
+            has_cycle = True
+            break
+    if not has_cycle:
+        return None  # 无环
+    
+    # 步骤2：重置一个指针到链表头，同步移动找到入口
+    ptr1 = head
+    ptr2 = slow  # 相遇点
+    while ptr1 != ptr2:
+        ptr1 = ptr1.next
+        ptr2 = ptr2.next
+    
+    return ptr1  # 入口节点
+
+
+
 # --------------- 测试用例 ---------------
 if __name__ == "__main__":
     # 构造一个带环的链表：1 -> 2 -> 3 -> 2（环）
@@ -72,3 +120,16 @@ if __name__ == "__main__":
     node5.next = node6
     
     print(has_cycle(node4))  # 输出 False
+
+    # 构造带环链表：1 -> 2 -> 3 -> 4 -> 2（环入口为2）
+    node1 = ListNode(1)
+    node2 = ListNode(2)
+    node3 = ListNode(3)
+    node4 = ListNode(4)
+    node1.next = node2
+    node2.next = node3
+    node3.next = node4
+    node4.next = node2  # 成环
+    
+    entry = detectCycle(node1)
+    print("环入口节点的值:", entry.val)  # 输出 2
