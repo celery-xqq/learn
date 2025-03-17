@@ -8,9 +8,9 @@
 # 扩展连续序列：对于每个可能的起点，向后扩展检查连续的元素是否存在，统计连续序列的长度，并更新最长长度。
 
 # 这种方法确保每个元素最多被访问两次，因此时间复杂度为O(n)，空间复杂度为O(n)。
-
+from typing import List
 class Solution:
-    def longestConsecutive(self, nums: list[int]) -> int:
+    def longestConsecutive(self, nums: List[int]) -> int:
         num_set = set(nums)
         max_length = 0
         
