@@ -21,3 +21,39 @@
 # 示例 3：
 # 输入：lists = [[]]
 # 输出：[]
+
+#相邻的链表两两合并
+
+from typing import List
+from typing import Optional
+# Definition for singly-linked list.
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+class Solution:
+    def mergeKLists(self, lists: List[Optional[ListNode]]) -> Optional[ListNode]:
+        if len(lists) == 0 :
+            return None
+        #两两合并
+        n = len(lists)
+        l1 = lists[0]
+        for i in range(1,n):
+            l2 = lists[i]
+            l1 = self.mergeTwoLists(l1,l2)
+        return l1
+
+    #两个链表合并的方法
+    def mergeTwoLists(self , l1 ,l2):
+        dummy = ListNode()
+        cur = dummy
+        while l1 and l2 :
+            if l1.val <= l2.val:
+                cur.next = l1
+                l1 = l1.next
+            else:
+                cur.next = l2
+                l2 = l2.next
+            cur = cur.next
+        cur.next = l1 if l1 else l2
+        return dummy.next
