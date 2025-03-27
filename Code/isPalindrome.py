@@ -1,101 +1,70 @@
-# 234. 回文链表
-# 给你一个单链表的头节点 head ，请你判断该链表是否为回文链表。如果是，返回 true ；否则，返回 false 。
+# 9. 回文数
+# 给你一个整数 x ，如果 x 是一个回文整数，返回 true ；否则，返回 false 。
+# 回文数是指正序（从左向右）和倒序（从右向左）读都是一样的整数。
+# 例如，121 是回文，而 123 不是。
+# 示例 1：
+# 输入：x = 121
+# 输出：true
+# 示例 2：
+# 输入：x = -121
+# 输出：false
+# 解释：从左向右读, 为 -121 。 从右向左读, 为 121- 。因此它不是一个回文数。
+# 示例 3：
+# 输入：x = 10
+# 输出：false
+# 解释：从右向左读, 为 01 。因此它不是一个回文数。
 
-# Definition for singly-linked list.
-class ListNode:
-    def __init__(self, val=0, next=None):
-        self.val = val
-        self.next = next
-
-def printListNode(head):
-    while head:
-        print(head.val, end=" -> ")
-        head = head.next
-    print("None")
-from typing import Optional
+#翻转该数字，比较两者是否相等
 class Solution:
-    def isPalindrome(self, head: Optional[ListNode]) -> bool:
-        #空链表的情况需要处理吗？
-        if head == None:
+    def isPalindrome(self, x: int) -> bool:
+        if x < 0 or (x % 10 == 0 and x != 0):
             return False
-        #先处理链表个数为1的情况
-        if head.next == None :
-            return True
+        reversed_num = 0
+        tmp = x
+        while tmp > 0:
+            reversed_num = reversed_num * 10 + tmp % 10
+            tmp //= 10
+        return x == reversed_num
 
-        slow = head
-        fast = head
-        #反转前半段链表，与后半段链表进行对比
-        halfL = None
-        halfR = None
-        temp = None
-        while fast and fast.next:
-            fast=fast.next.next
-            #反转链表
-            temp = slow.next
-            slow.next = halfL
-            halfL = slow
-            slow = temp
-        #长度为偶数
-        if fast == None:
-            halfR=slow
-        #长度为奇数
-        else:
-            halfR=slow.next
-        #对比两个链表的值是不是一样，全部都相等，就是回文链表
-        while halfR :
-            if halfL.val != halfR.val:
-                return False
-            halfL=halfL.next
-            halfR=halfR.next
-        return True
-            
-        
-import unittest
+# 要判断一个整数是否为回文数，可以采用以下方法：
+# ### 方法思路
+# 回文数的定义是正序和倒序读都相同的整数。根据这个特性，我们可以通过反转整数的一半位数来验证是否为回文数，
+# 这样可以在避免整数溢出的同时提高效率。
 
-# 测试类
-class TestSolution(unittest.TestCase):
+# 具体步骤如下：
+# 1. **处理特殊情况**：
+#    - 如果整数为负数，直接返回 `false`，因为负数不可能有对称的正负号。
+#    - 如果整数的最后一位是0且整数本身不为0，也返回 `false`，因为这样的数反转后前导零无效。
+   
+# 2. **反转后半部分数字**：
+#    - 将原始数字不断除以10，并将余数加到反转数字的末尾，直到原始数字小于或等于反转数字。这样可以只处理数字的一半位数，减少计算量。
 
-    def test_isPalindrome_empty_list(self):
-        # 空链表
-        head = None
-        solution = Solution()
-        self.assertFalse(solution.isPalindrome(head))
+# 3. **验证回文**：
+#    - 对于偶数位数的数字，反转后的数字应等于前半部分。
+#    - 对于奇数位数的数字，反转后的数字去掉最后一位（中间位）后应等于前半部分。
 
-    def test_isPalindrome_single_node(self):
-        # 单个节点的链表
-        head = ListNode(1)
-        solution = Solution()
-        self.assertTrue(solution.isPalindrome(head))
+### 解决代码
+class Solution:
+    def isPalindrome(self, x: int) -> bool:
+        if x < 0 or (x % 10 == 0 and x != 0):
+            return False
+        reversed_num = 0
+        while x > reversed_num:
+            reversed_num = reversed_num * 10 + x % 10
+            x //= 10
+        return x == reversed_num or x == reversed_num // 10
 
-    def test_isPalindrome_two_nodes_same(self):
-        # 两个节点值相同的链表
-        head = ListNode(1, ListNode(1))
-        solution = Solution()
-        self.assertTrue(solution.isPalindrome(head))
+# ### 代码解释
+# 1. **特殊情况处理**：
+#    - `x < 0`：处理负数情况。
+#    - `(x % 10 == 0 and x != 0)`：处理末尾为0的非零数。
 
-    def test_isPalindrome_two_nodes_different(self):
-        # 两个节点值不同的链表
-        head = ListNode(1, ListNode(2))
-        solution = Solution()
-        self.assertFalse(solution.isPalindrome(head))
+# 2. **反转过程**：
+#    - 使用循环不断取出原始数字的最后一位，并构建反转数字，直到原始数字小于或等于反转数字。
 
-    def test_isPalindrome_even_length_palindrome(self):
-        # 偶数长度的回文链表
-        head = ListNode(1, ListNode(2, ListNode(2, ListNode(1))))
-        solution = Solution()
-        self.assertTrue(solution.isPalindrome(head))
+# 3. **回文验证**：
+#    - 偶数位情况：`x == reversed_num`
+#    - 奇数位情况：`x == reversed_num // 10`（去掉中间位后比较）
 
-    def test_isPalindrome_odd_length_palindrome(self):
-        # 奇数长度的回文链表
-        head = ListNode(1, ListNode(2, ListNode(3, ListNode(2, ListNode(1)))))
-        solution = Solution()
-        self.assertTrue(solution.isPalindrome(head))
-
-    def test_isPalindrome_not_palindrome(self):
-        # 非回文链表
-        head = ListNode(1, ListNode(2, ListNode(3, ListNode(4))))
-        solution = Solution()
-        self.assertFalse(solution.isPalindrome(head))
-
-if __name__ == '__main__':
-    unittest.main() 
+# 这种方法的时间复杂度为 O(log n)，其中 n 是输入的整数，每次循环处理一位数字。空间复杂度为 O(1)，仅使用常数级别的额外空间。
+    
